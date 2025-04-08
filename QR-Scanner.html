@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>VIP QR Scanner Wedding Tami</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.7/html5-qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    #reader {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    #result {
+      margin-top: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h2>VIP QR Scanner</h2>
+  <div id="reader"></div>
+  <div id="result"></div>
+
+  <script>
+    const html5QrCode = new Html5Qrcode("reader");
+
+    function displayVIPInfo(decodedText) {
+      try {
+        const vip = JSON.parse(decodedText);
+        document.getElementById("result").innerHTML = `
+          <strong>Nama VIP:</strong> ${vip.name}<br>
+          <strong>Grup:</strong> ${vip.group}
+        `;
+      } catch (err) {
+        document.getElementById("result").innerHTML = "Invalid QR Code.";
+      }
+    }
+
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        html5QrCode.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: 250
+          },
+          decodedText => {
+            html5QrCode.stop();
+            displayVIPInfo(decodedText);
+          },
+          errorMessage => {
+            // silent fail
+          }
+        );
+      } else {
+        alert("No camera found.");
+      }
+    }).catch(err => {
+      alert("Inisiasi Kamera Gagal, Silahkan Refresh Halaman ini: " + err);
+    });
+  </script>
+</body>
+</html>
